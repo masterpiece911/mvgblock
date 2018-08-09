@@ -8,3 +8,5 @@ Click to load data.
 Middle click to ignore filters.
 Right click to iterate through your preset departure stations.
 Use mouse wheel to scroll through departures.
+
+![mvgblock Screenshot](mvgblock-screenshot.png?raw=true)
