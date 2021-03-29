@@ -8,4 +8,5 @@ Right click to iterate through your preset departure stations.
 Use mouse wheel to scroll through departures.
 
 The `mvgconfig.json` file uses MVG internal IDs. You can find them by abusing the developer console. The `mvgcache.json` will not work without required fields. You never need to change it manually. Do not touch it.
+
 ![mvgblock Screenshot](mvgblock-screenshot.png?raw=true)
