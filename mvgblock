@@ -4,47 +4,30 @@
 
 import os
 import json
-import subprocess
+import requests
+from datetime import timedelta
+from datetime import time
 
-# Settings
+# Load config and cache
 # ----------
 
-with open('/absolute/path/to/your/mvgconfig.json') as file:
-    settings = json.load(file)
-    # the file schema for the json is as follows:
-    # {
-    #   "stations": [ // a list of all stations we want to get data for
-    #     { // following two are filters, only departures containing these tags will be shown, unless the middle mouse button is pressed
-    #       "directions": [ // a list of selected directions)
-    #         "Klinikum Gro\u00dfhadern",
-    #         "Harras"
-    #       ],
-    #       "lines": [ // a list of selected lines
-    #         "U6"
-    #       ],
-    #       "name": "Garching Forschungszentrum" // name of station
-    #     }
-    #   ],
-    #   "station_index": 1, // currently shown station
-    #   "departure_index": 0, // currently shown departure time
-    #   "current": [ // a list of departures, previously pulled
-    #     {
-    #       "line": "154", // the line of departure shown
-    #       "destination": "Nordbad", // destination
-    #       "minutes": 1 // time of arrival in minutes
-    #     },
-    #   ]
-    # }
-stationIndex= int(settings['station_index'])
-departureIndex = int(settings['departure_index'])
-stationName= settings['stations'][stationIndex]['name']
-directions= settings['stations'][stationIndex]['directions']
-lines= settings['stations'][stationIndex]['lines']
-currentInfo= settings['current']
+with open('./mvgconfig.json') as file:
+    config = json.load(file)
+
+with open('./mvgcache.json') as file:
+    cache = json.load(file)
+
+stationIndex= int(cache['station_index'])
+departureIndex = int(cache['departure_index'])
+stationName= config['stations'][stationIndex]['name']
+stationID= config['stations'][stationIndex]['id']
+directions= config['stations'][stationIndex]['directions']
+lines= config['stations'][stationIndex]['lines']
+departures= cache['departures']
 
 # ----------
 def blockEvent():
-    global currentInfo
+    global departures
     global departureIndex
 
     event = '0'
@@ -53,11 +36,11 @@ def blockEvent():
     except KeyError:
         event = '0'
 
-    # event = '1'
+    event = '1'
 
     if event == '1': #Left-click
         ## Reload the data
-        currentInfo = loadData()
+        departures = load()
         ## set index to zero
         departureIndex = 0
         ## filter the data
@@ -67,17 +50,17 @@ def blockEvent():
         return True
     elif event == '2': #Middle-click
         ## reload the data
-        currentInfo= loadData()
+        departures = load()
         ## set index to zero
         departureIndex=0
         ## print data
-        printer(currentInfo)
+        printer(departures)
         return True
     elif event == '3': #Right-click
         ## change station
         changeStationIndex()
         ## reload the data
-        currentInfo= loadData()
+        departures = load()
         ## set index to zero
         departureIndex= 0
         ## filter the data
@@ -89,13 +72,13 @@ def blockEvent():
         ## change index(negative)
         changeDepartureIndex(-1)
         ## print data
-        printer(settings['current'])
+        printer(cache['departures'])
         return True
     elif event == '5': #Scroll-down
         ## change index(positive)
         changeDepartureIndex(+1)
         ## print data
-        printer(currentInfo)
+        printer(departures)
         return True
     return False
 
@@ -103,47 +86,62 @@ def changeStationIndex():
 
     global stationIndex
     global stationName
+    global stationID
     global directions
     global lines
 
 
     stationIndex += 1
-    if stationIndex == len(settings['stations']):
+    if stationIndex == len(config['stations']):
         stationIndex = 0
 
-    stationName = settings['stations'][stationIndex]['name']
-    directions= settings['stations'][stationIndex]['directions']
-    lines= settings['stations'][stationIndex]['lines']
+    stationName= config['stations'][stationIndex]['name']
+    stationID= config['stations'][stationIndex]['id']
+    directions= config['stations'][stationIndex]['directions']
+    lines= config['stations'][stationIndex]['lines']
 
 def changeDepartureIndex(iterate):
 
     global departureIndex
 
-    if departureIndex + iterate == len(settings['current']) or departureIndex + iterate < 0:
+    if departureIndex + iterate == len(cache['departures']) or departureIndex + iterate < 0:
         pass
     else:
         departureIndex += iterate
 
 
-def loadData():
+def load():
 
-    global currentInfo
+    global departures 
 
-    info = json.loads(subprocess.check_output(["mvg_json", stationName]))
+    # payload = json.loads(subprocess.check_output(["curl", "www.mvg.de/api/fahrinfo/departure/" + stationID]))
+    r = requests.get("https://www.mvg.de/api/fahrinfo/departure/" + stationID)
 
-    currentInfo = info['result_sorted']
-    return currentInfo
+    payload = r.json()["departures"]
+
+    departures = []
+
+    for departure in payload:
+        fDeparture = {}
+        fDeparture["line"]= departure["label"]
+        fDeparture["destination"]= departure["destination"]
+        fDeparture["minutes"]= int((timedelta(milliseconds=departure["departureTime"]) - timedelta(microseconds=time().microsecond)).seconds / 60 - 1200)
+        departures.append(fDeparture)
+
+
+    # departures = info['result_sorted']
+    return departures 
 
 def filteredData():
 
-    global currentInfo
+    global departures 
     global directions
     global lines
 
     filteredData = []
-    if currentInfo == None:
+    if departures == None:
         return []
-    for departure in currentInfo:
+    for departure in departures:
         if departure['destination'] in directions:
             if departure['line'] in lines:
                 filteredData.append(departure)
@@ -152,23 +150,22 @@ def filteredData():
 
 def printer(data):
 
-    refreshSettings(data)
-
+    writeCache(data)
 
     if data == [] or data == None:
         frag = []
         frag.append('<span color="#DC143C">')
         frag.append('</span>')
         output = ':: NO DEPARTURE DATA AVAILABLE FOR %s ::' % stationName
-        if 'straße'.decode('utf-8') in output:
-            output = output.replace('straße'.decode('utf-8'), 'str.')
-        if 'ß'.decode('utf-8') in output:
-            output = output.replace('ß'.decode('utf-8'), 'ss')
+        if 'straße' in output:
+            output = output.replace('straße', 'str.')
+        if 'ß' in output:
+            output = output.replace('ß', 'ss')
         output = output.upper()
         output = frag[0] + output + frag[1]
         outputshort = frag[0] + ':: NO DEPARTURE DATA AVAILABLE ::' + frag[1]
-        print output.encode('utf-8')
-        print outputshort.encode('utf-8')
+        print(output.encode('utf-8'))
+        print(outputshort.encode('utf-8'))
         exit()
 
     toShow = data[departureIndex]
@@ -198,10 +195,10 @@ def printer(data):
     output = ('Line %s to %s DEPARTS IN %s MINUTE(S) FROM %s ') % (toShow['line'], toShow['destination'], toShow['minutes'], stationName)
     output = output.lower()
 
-    if 'straße'.decode('utf-8') in output:
-        output = output.replace('straße'.decode('utf-8'), 'str.')
-    if 'ß'.decode('utf-8') in output:
-        output = output.replace('ß'.decode('utf-8'), 'ss')
+    if 'straße' in output:
+        output = output.replace('straße', 'str.')
+    if 'ß' in output:
+        output = output.replace('ß', 'ss')
     output = output.upper()
 
     loc = []
@@ -214,24 +211,21 @@ def printer(data):
 
     outputshort = frag[0] + output[:loc[0]] + output[loc[1]:loc[2]]  + frag[1] + frag[2] + output[loc[2]:loc[3]] + frag[3] + frag[4] + output[loc[3]:] + frag[5]
 
-    print outputlong.encode('utf-8')
-    print outputshort.encode('utf-8')
+    print(outputlong)
+    print(outputshort)
 
-
-
-
-def refreshSettings(data):
+def writeCache(data):
 
     global stationIndex
     global departureIndex
-    global settings
+    global cache
 
-    settings['current']= data
-    settings['station_index']= stationIndex
-    settings['departure_index']= departureIndex
+    cache['departures']= data
+    cache['station_index']= stationIndex
+    cache['departure_index']= departureIndex
 
-    with open('/home/sahin/.config/i3/scripts/mvgconfig.json', 'w') as file:
-        json.dump(settings, file, indent=2)
+    with open('./mvgcache.json', 'w') as file:
+        json.dump(cache, file, indent=2)
 
 if not blockEvent():
-    print '<span color="#FFA500">:: CLICK TO LOAD DEPARTURE DATA ::</span>'
+    print('<span color="#FFA500">:: CLICK TO LOAD DEPARTURE DATA ::</span>')

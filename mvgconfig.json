@@ -1,120 +1,16 @@
 {
-  "current": [
-    {
-      "line": "54", 
-      "destination": "M\u00fcnchner Freiheit", 
-      "minutes": 1
-    }, 
-    {
-      "line": "68", 
-      "destination": "CityRing via Giselastra\u00dfe - Hauptbahnhof", 
-      "minutes": 5
-    }, 
-    {
-      "line": "54", 
-      "destination": "M\u00fcnchner Freiheit", 
-      "minutes": 6
-    }, 
-    {
-      "line": "154", 
-      "destination": "Nordbad", 
-      "minutes": 8
-    }, 
-    {
-      "line": "68", 
-      "destination": "CityRing via Giselastra\u00dfe - Hauptbahnhof", 
-      "minutes": 14
-    }, 
-    {
-      "line": "154", 
-      "destination": "Nordbad", 
-      "minutes": 18
-    }, 
-    {
-      "line": "54", 
-      "destination": "M\u00fcnchner Freiheit", 
-      "minutes": 19
-    }, 
-    {
-      "line": "68", 
-      "destination": "CityRing via Giselastra\u00dfe - Hauptbahnhof", 
-      "minutes": 22
-    }, 
-    {
-      "line": "154", 
-      "destination": "Nordbad", 
-      "minutes": 28
-    }, 
-    {
-      "line": "54", 
-      "destination": "M\u00fcnchner Freiheit", 
-      "minutes": 29
-    }, 
-    {
-      "line": "68", 
-      "destination": "CityRing via Giselastra\u00dfe - Hauptbahnhof", 
-      "minutes": 32
-    }, 
-    {
-      "line": "154", 
-      "destination": "Nordbad", 
-      "minutes": 38
-    }, 
-    {
-      "line": "54", 
-      "destination": "M\u00fcnchner Freiheit", 
-      "minutes": 39
-    }, 
-    {
-      "line": "68", 
-      "destination": "CityRing via Giselastra\u00dfe - Hauptbahnhof", 
-      "minutes": 42
-    }, 
-    {
-      "line": "154", 
-      "destination": "Nordbad", 
-      "minutes": 48
-    }
-  ], 
-  "station_index": 1, 
-  "departure_index": 0, 
   "stations": [
     {
-      "directions": [
-        "Klinikum Gro\u00dfhadern", 
-        "Harras"
-      ], 
-      "lines": [
-        "U6"
-      ], 
-      "name": "Garching Forschungszentrum"
-    }, 
+      "id": "de:09162:106",
+      "name": "Infanteriestraße",
+      "directions": ["Aidenbachstraße U via Rotkreuzplatz U"],
+      "lines": ["53"]
+    },
     {
-      "directions": [
-        "M\u00fcnchner Freiheit", 
-        "CityRing via Giselastra\u00dfe - Hauptbahnhof", 
-        "Nordbad", 
-        "M.Freiheit - Ostbhf."
-      ], 
-      "lines": [
-        "54", 
-        "68", 
-        "154", 
-        "N44"
-      ], 
-      "name": "Hirschauer Stra\u00dfe"
-    }, 
-    {
-      "directions": [
-        "Fr\u00f6ttmaning", 
-        "Garching-Forschungszentrum", 
-        "M\u00fcnchner Freiheit"
-      ], 
-      "lines": [
-        "U6", 
-        "U"
-      ], 
-      "name": "Harras"
+      "id": "de:09162:1130",
+      "name": "Harras",
+      "directions": ["Münchner Freiheit U"],
+      "lines": ["53"]
     }
   ]
 }
