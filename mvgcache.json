@@ -10,7 +10,17 @@
     {
       "line": "53",
       "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
+      "minutes": 16
+    },
+    {
+      "line": "53",
+      "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
       "minutes": 26
+    },
+    {
+      "line": "53",
+      "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
+      "minutes": 36
     },
     {
       "line": "53",
@@ -20,17 +30,7 @@
     {
       "line": "53",
       "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
-      "minutes": 66
-    },
-    {
-      "line": "53",
-      "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
-      "minutes": 86
-    },
-    {
-      "line": "53",
-      "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
-      "minutes": 106
+      "minutes": 56
     }
   ]
 }

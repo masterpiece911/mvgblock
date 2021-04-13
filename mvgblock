@@ -1,20 +1,18 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 
 import os
 import json
 import requests
-from datetime import timedelta
-from datetime import time
 
 # Load config and cache
 # ----------
 
-with open('./mvgconfig.json') as file:
+with open('/home/sahi_no/.config/i3/scripts/mvgblock/mvgconfig.json', 'r') as file:
     config = json.load(file)
 
-with open('./mvgcache.json') as file:
+with open('/home/sahi_no/.config/i3/scripts/mvgblock/mvgcache.json', 'r') as file:
     cache = json.load(file)
 
 stationIndex= int(cache['station_index'])
@@ -36,7 +34,7 @@ def blockEvent():
     except KeyError:
         event = '0'
 
-    event = '1'
+#   event = '1'
 
     if event == '1': #Left-click
         ## Reload the data
@@ -114,10 +112,14 @@ def load():
 
     global departures 
 
-    # payload = json.loads(subprocess.check_output(["curl", "www.mvg.de/api/fahrinfo/departure/" + stationID]))
-    r = requests.get("https://www.mvg.de/api/fahrinfo/departure/" + stationID)
+    headers = {"Accept-Language": "de;q=0.5"}
 
-    payload = r.json()["departures"]
+    # payload = json.loads(subprocess.check_output(["curl", "www.mvg.de/api/fahrinfo/departure/" + stationID]))
+    departureRequest = requests.get("https://www.mvg.de/api/fahrinfo/departure/" + stationID, headers=headers)
+    timeRequest = requests.get("https://www.mvg.de/clockService/currentDate", headers=headers)
+
+    payload = departureRequest.json()["departures"]
+    currentTime = int(timeRequest.text)
 
     departures = []
 
@@ -125,7 +127,13 @@ def load():
         fDeparture = {}
         fDeparture["line"]= departure["label"]
         fDeparture["destination"]= departure["destination"]
-        fDeparture["minutes"]= int((timedelta(milliseconds=departure["departureTime"]) - timedelta(microseconds=time().microsecond)).seconds / 60 - 1200)
+        
+        departureTime = departure["departureTime"]
+
+#        fDeparture["minutes"] = ((datetime.datetime.fromtimestamp(departureTime / 1000)) - (datetime.datetime.fromtimestamp(currentTime / 1000))).seconds // 60
+
+        fDeparture["minutes"] = (departureTime - currentTime + 2 * 60 * 60 * 1000) // 1000 // 60
+
         departures.append(fDeparture)
 
 
@@ -164,8 +172,8 @@ def printer(data):
         output = output.upper()
         output = frag[0] + output + frag[1]
         outputshort = frag[0] + ':: NO DEPARTURE DATA AVAILABLE ::' + frag[1]
-        print(output.encode('utf-8'))
-        print(outputshort.encode('utf-8'))
+        print(output)
+        print(outputshort)
         exit()
 
     toShow = data[departureIndex]
@@ -224,7 +232,7 @@ def writeCache(data):
     cache['station_index']= stationIndex
     cache['departure_index']= departureIndex
 
-    with open('./mvgcache.json', 'w') as file:
+    with open('/home/sahi_no/.config/i3/scripts/mvgblock/mvgcache.json', 'w') as file:
         json.dump(cache, file, indent=2)
 
 if not blockEvent():
