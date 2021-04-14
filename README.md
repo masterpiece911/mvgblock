@@ -2,6 +2,8 @@
 
 A script written for the https://github.com/vivien/i3blocks i3bar extension.
 
+[![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
+
 Click to load data.
 Middle click to ignore filters.
 Right click to iterate through your preset departure stations.
