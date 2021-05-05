@@ -1,4 +1,6 @@
 {
+  "enabled": true,
+  "filtered": true,
   "station_index": 0,
   "departure_index": 0,
   "departures": [
