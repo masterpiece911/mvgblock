@@ -1,38 +1,38 @@
 {
-  "enabled": true,
-  "filtered": true,
-  "station_index": 0,
-  "departure_index": 0,
   "departures": [
     {
       "line": "53",
       "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
-      "minutes": 6
+      "minutes": 5
     },
     {
       "line": "53",
       "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
-      "minutes": 16
+      "minutes": 15
     },
     {
       "line": "53",
       "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
-      "minutes": 26
+      "minutes": 25
     },
     {
       "line": "53",
       "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
-      "minutes": 36
+      "minutes": 35
     },
     {
       "line": "53",
       "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
-      "minutes": 46
+      "minutes": 45
     },
     {
       "line": "53",
       "destination": "Aidenbachstra\u00dfe U via Rotkreuzplatz U",
-      "minutes": 56
+      "minutes": 55
     }
-  ]
+  ],
+  "station_index": 0,
+  "departure_index": 0,
+  "enabled": true,
+  "filtered": true
 }

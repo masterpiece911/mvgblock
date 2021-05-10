@@ -62,7 +62,7 @@ def blockEvent():
     elif event == '5': #Scroll-down
         ## change index(positive)
         changeDepartureIndex(+1)
-    elif enabled = true:
+    elif enabled == True:
         departureIndex = 0
 
 def changeStationIndex():
@@ -121,11 +121,11 @@ def load(filtered):
             departures.append(fDeparture)
     
     if filtered:
-        return filtered(departures)
+        return filter(departures)
     else:
         return departures 
 
-def filtered(departures):
+def filter(departures):
 
     global directions
     global lines
@@ -210,9 +210,10 @@ def writeCache(data):
 
     global stationIndex
     global departureIndex
-    global cache
     global enabled
     global filtered
+
+    cache = {}
 
     cache['departures']= data
     cache['station_index']= stationIndex
@@ -225,7 +226,9 @@ def writeCache(data):
 
 blockEvent()
 if not enabled:
-    print('<span color="#FFA500">:: CLICK TO LOAD DEPARTURE DATA ::</span>')
+    print('<span color="#FFA500">:: VIEW DEPARTURES ::</span>')
+    data = {}
+    writeCache(data)
     exit()
 data = {}
 if oldDepartureIndex != departureIndex:
